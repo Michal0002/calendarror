@@ -2,20 +2,11 @@ class TasksController < ApplicationController
     before_action :authenticate_user!
   
     def index
-        @date = params[:date] ? Date.parse(params[:date]) : Date.today
-      
-        first_day_of_month = @date.beginning_of_month
-      
-        start_day = first_day_of_month.beginning_of_week(:monday)
-      
-        last_day_of_month = @date.end_of_month
-      
-        end_day = last_day_of_month.end_of_week(:monday)
-      
-        @days = (start_day..end_day).to_a
-      
-        @tasks = Task.where(start_time: start_day.beginning_of_day..end_day.end_of_day)
-      
+        @date = params[:date] ? Date.parse(params[:date]) : Date.current
+        start_date = @date.beginning_of_month
+        end_date = @date.end_of_month
+        @tasks = Task.where(start_time: start_date..end_date)
+        @days = (@date.beginning_of_month.beginning_of_week(:monday)..@date.end_of_month.end_of_week(:sunday)).to_a
       end
       
   

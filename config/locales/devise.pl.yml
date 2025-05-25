@@ -11,3 +11,42 @@ pl:
       invalid: 'Nieprawidłowa nazwa użytkownika lub hasło.'
       not_found_in_database: 'Nie znaleziono konta.'
       already_authenticated: 'Jesteś już zalogowany.'
+
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              taken: "Adres e-mail jest już zajęty"
+            password_confirmation:
+              confirmation: "Potwierdzenie hasła nie zgadza się z hasłem"
+  errors:
+    format: "%{message}"
+    messages:
+      accepted: "musi zostać zaakceptowany"
+      blank: "nie może być puste"
+      confirmation: "nie zgadza się z %{attribute}"
+      empty: "nie może być puste"
+      equal_to: "musi być równe %{count}"
+      even: "musi być parzyste"
+      exclusion: "jest zarezerwowane"
+      greater_than: "musi być większe niż %{count}"
+      greater_than_or_equal_to: "musi być większe lub równe %{count}"
+      inclusion: "nie znajduje się na liście dozwolonych wartości"
+      invalid: "jest nieprawidłowe"
+      less_than: "musi być mniejsze niż %{count}"
+      less_than_or_equal_to: "musi być mniejsze lub równe %{count}"
+      model_invalid: "Nieprawidłowe dane: %{errors}"
+      not_a_number: "nie jest liczbą"
+      not_an_integer: "musi być liczbą całkowitą"
+      odd: "musi być nieparzyste"
+      present: "musi być puste"
+      required: "musi istnieć"
+      taken: "jest już zajęty"
+      too_long: "jest za długie (maksymalnie %{count} znaków)"
+      too_short: "jest za krótkie (minimum %{count} znaków)"
+      wrong_length: "ma nieprawidłową długość (powinno mieć %{count} znaków)"
+      not_saved:
+        one: "1 błąd uniemożliwił zapisanie %{resource}:"
+        other: "%{count} błędów uniemożliwiło zapisanie %{resource}:"

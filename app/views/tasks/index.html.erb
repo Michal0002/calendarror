@@ -2,7 +2,7 @@
 <div class="container my-4">
   <div class="d-flex justify-content-between mb-3">
     <%= link_to "« Poprzedni miesiąc", tasks_path(date: (@date - 30).to_s), class: "btn btn-outline-primary" %>
-    <h4><%= @date.strftime("%B %Y") %></h4>
+    <h5><%= I18n.l(@date, format: "%B %Y") %></h5>
     <%= link_to "Następny miesiąc »", tasks_path(date: (@date + 30).to_s), class: "btn btn-outline-primary" %>
   </div>
 
@@ -26,27 +26,30 @@
              data-has-tasks="<%= day_tasks.any? %>">
           <div class="card-body">
             <h6 class="card-title"><%= day.strftime("%d.%m.%Y") %></h6>
-            <% if day_tasks.any? %>
-              <ul class="list-unstyled small text-start mb-0 task-list">
-                <% day_tasks.each do |task| %>
-                  <li>
-                    <span class="<%= task.importance == 'high' ? 'text-danger fw-bold' : 'text-secondary' %>">
-                      <%= task.title %> (<%= task.start_time.strftime("%H:%M") %> - <%= task.end_time.strftime("%H:%M") %>)
-                    </span><br>
-                    <small class="text-muted"><%= truncate(task.description, length: 60) %></small>
-                  </li>
-                <% end %>
-              </ul>
-            <% else %>
-              <p class="text-muted small mb-0">Brak zadań</p>
-            <% end %>
+<% if day_tasks.any? %>
+  <ul class="list-unstyled small text-start mb-0 task-list">
+    <% day_tasks.each do |task| %>
+      <li
+        data-title="<%= task.title %>"
+        data-description="<%= truncate(task.description, length: 60) %>"
+        data-user="<%= task.user.username %>"
+        data-start="<%= task.start_time.strftime('%H:%M') %>"
+        data-end="<%= task.end_time.strftime('%H:%M') %>">
+        <span class="<%= task.importance == 'high' ? 'text-danger fw-bold' : 'text-secondary' %>">
+          <%= task.title %> (<%= task.start_time.strftime("%H:%M") %> - <%= task.end_time.strftime("%H:%M") %>)
+        </span>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-muted small mb-0">Brak zadań</p>
+<% end %>
           </div>
         </div>
       </div>
     <% end %>
   </div>
 </div>
-
 <!-- Modal -->
 <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -94,132 +97,5 @@
     </div>
   </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const taskModal = document.getElementById('taskModal')
-  const modalDayLabel = document.getElementById('modalDay')
-  const tasksListDiv = document.getElementById('tasksList')
-  const addTaskFormDiv = document.getElementById('addTaskForm')
-  const taskItemsUl = document.getElementById('taskItems')
-  const showAddFormBtn = document.getElementById('showAddFormBtn')
-  const cancelAddTaskBtn = document.getElementById('cancelAddTaskBtn')
-
-  taskModal.addEventListener('show.bs.modal', function (event) {
-    const button = event.relatedTarget
-    const day = button.getAttribute('data-day')
-    const hasTasks = button.getAttribute('data-has-tasks') === 'true'
-
-    modalDayLabel.textContent = new Date(day).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' })
-
-    if (hasTasks) {
-      tasksListDiv.style.display = 'block'
-      addTaskFormDiv.style.display = 'none'
-
-      taskItemsUl.innerHTML = ''
-
-      const dayCard = document.querySelector(`[data-day='${day}']`)
-      if (dayCard) {
-        const lis = dayCard.querySelectorAll('ul.list-unstyled li')
-        lis.forEach(li => {
-          const newLi = document.createElement('li')
-          newLi.classList.add('list-group-item')
-          newLi.innerHTML = li.innerHTML
-          taskItemsUl.appendChild(newLi)
-        })
-      }
-
-      showAddFormBtn.onclick = () => {
-        tasksListDiv.style.display = 'none'
-        addTaskFormDiv.style.display = 'block'
-        addTaskFormDiv.querySelector('input[name="task[day]"]').value = day
-      }
-    } else {
-      tasksListDiv.style.display = 'none'
-      addTaskFormDiv.style.display = 'block'
-      addTaskFormDiv.querySelector('input[name="task[day]"]').value = day
-    }
-  })
-
-  cancelAddTaskBtn.onclick = () => {
-    addTaskFormDiv.style.display = 'none'
-    tasksListDiv.style.display = 'block'
-  }
-})
-</script>
-
-<style>
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.75rem;
-  }
-
-  .day-header {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    color: #444;
-  }
-
-  .day-cell {
-    min-height: 160px;
-  }
-
-  .day-card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border-radius: 10px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    padding: 0;
-  }
-
-  .day-card:hover {
-    background-color: #e8f0fe;
-    transform: translateY(-3px);
-  }
-
-  .day-card .card-body {
-    padding: 0.75rem;
-    overflow: hidden;
-  }
-
-  .task-list {
-    max-height: 85px;
-    overflow-y: auto;
-  }
-
-  .day-card ul li {
-    margin-bottom: 0.25rem;
-  }
-
-  .other-month {
-    background-color: #f0f0f0 !important;
-    color: #999 !important;
-    font-size: 0.85rem;
-  }
-
-  .other-month .card-title {
-    font-weight: normal;
-  }
-
-  .bg-light {
-    background-color: #f8f9fa !important;
-  }
-
-  .border-primary {
-    border: 2px solid #0d6efd !important;
-    background-color: #e7f1ff !important;
-  }
-
-  .cursor-pointer {
-    cursor: pointer;
-  }
-
-  .today-highlight {
-    border: 3px solid #198754 !important;
-    box-shadow: 0 0 10px rgba(25,135,84,0.4);
-  }
-</style>
+<%= stylesheet_link_tag "calendar", media: "all", "data-turbo-track": "reload" %>
+<%= javascript_include_tag "calendar", "data-turbo-track": "reload" %>
