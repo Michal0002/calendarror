@@ -6,7 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
+    <%= stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' %>
+    <%= javascript_include_tag 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' %>
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
@@ -16,10 +17,41 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
+    <body>
+    <nav class="p-3 mb-3 bg-body-tertiary border-bottom d-flex justify-content-end">
+      <% if user_signed_in? %>
+        <%= link_to edit_user_registration_path, class: "d-flex align-items-center text-decoration-none" do %>
+          <% if current_user.avatar.attached? %>
+            <%= image_tag current_user.avatar.variant(resize_to_fill: [32, 32]), class: "rounded-circle me-2", size: "32x32" %>
+          <% end %>
+          <p> Witaj, <%= current_user.username %>! </p>
+        <% end %>
+        <%= button_to 'Wyloguj', destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger ms-3' %>
+      <% else %>
+        <%= link_to 'Zaloguj', new_user_session_path, class: 'btn btn-outline-primary me-2' %>
+        <%= link_to 'Zarejestruj się', new_user_registration_path, class: 'btn btn-outline-success' %>
+      <% end %>
+    </nav>
 
-  <body>
-    <%= yield %>
-       <p class="notice"><%= notice %></p>
-       <p class="alert"><%= alert %></p>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+
+    <% if flash[:notice] %>
+      <script>
+        alert("<%= flash[:notice] %>");
+        window.location.reload();
+      </script>
+    <% end %>
+
+    <% if flash[:alert] %>
+      <script>
+        alert("<%= flash[:alert] %>");
+        window.location.reload();
+      </script>
+    <% end %>
   </body>
-</html>
